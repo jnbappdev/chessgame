@@ -1,7 +1,5 @@
 package passoff.chess;
 
-import chess.ChessPosition;
-
 import java.util.Collection;
 import java.util.List;
 

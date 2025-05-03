@@ -30,6 +30,11 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    @Override
+    public String toString() {
+        return "ChessGame{}";
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -52,7 +57,7 @@ public class ChessGame {
     /**
      * Makes a move in a chess game
      *
-     * @param move chess move to perform
+     * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {

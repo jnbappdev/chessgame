@@ -1,6 +1,5 @@
 package passoff.chess.piecemoves;
 
-import chess.ChessPosition;
 import org.junit.jupiter.api.Test;
 import passoff.chess.TestUtilities;
 

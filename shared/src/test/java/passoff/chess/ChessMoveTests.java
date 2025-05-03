@@ -2,7 +2,6 @@ package passoff.chess;
 
 import chess.ChessMove;
 import chess.ChessPiece;
-import chess.ChessPosition;
 
 import java.util.Collection;
 import java.util.List;
