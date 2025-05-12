@@ -10,9 +10,22 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
+
+
     private ChessPiece[][] grid = new ChessPiece[8][8];
     public ChessBoard() {
-//        what should go here exactly?
+
+    }
+    public ChessBoard(ChessBoard copy) {
+        grid = Arrays.copyOf(copy.grid, copy.grid.length);
+    }
+
+    public static void main(String[] args){
+        ChessBoard source = new ChessBoard();
+        ChessBoard copy = new ChessBoard(source);
+
+//        source.grid[0] = "x";
+//        return copy.grid[0];
     }
     /**
      * Adds a chess piece to the chessboard
@@ -21,7 +34,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece){
-        grid[position.getRow()-1][position.getColumn()-1] = piece;
+            grid[position.getRow()-1][position.getColumn()-1] = piece;
     }
     /**
      * Gets a chess piece on the chessboard
