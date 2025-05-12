@@ -98,6 +98,8 @@ public class ChessGame {
         if(!okay.contains(move)){
             throw new InvalidMoveException("Move invalid -> move against rules");
         }
+        boardSetup.addPiece(move.getStartPosition(), piece);
+        boardSetup.addPiece(move.getStartPosition(), null);
     }
 
     /**
