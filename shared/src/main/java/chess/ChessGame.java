@@ -153,7 +153,10 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {  // which team's color is getting passed into here?
         if (isInCheck(teamColor)){
+            for(int i = 0; i < 8 ; i++){
+                for(int j = 0; j < 8; j++){
 
+                }
         }
 
         ChessBoard pieces = getBoard();
