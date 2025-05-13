@@ -69,8 +69,8 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = piece.pieceMoves(boardSetup, startPosition);
         for (ChessMove move : possibleMoves) {
             ChessBoard copiedBoard = new ChessBoard(boardSetup);
-            boardSetup.addPiece(move.getEndPosition(), piece);
-            boardSetup.addPiece(move.getStartPosition(), null);
+            copiedBoard.addPiece(move.getEndPosition(), piece);
+            copiedBoard.addPiece(move.getStartPosition(), null);
             if (!isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
@@ -123,7 +123,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {  // which team's color is getting passed into here?
-        ChessBoard pieces = new ChessBoard();
+        ChessBoard pieces = boardSetup;
 
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
@@ -193,7 +193,7 @@ public class ChessGame {
          * @return True if the specified team is in stalemate, otherwise false
          */
         public boolean isInStalemate (TeamColor teamColor){
-            if (isInCheck(teamColor)) {
+            if (isInCheck(teamColor) ) {
                 return false;
             }
             else{
@@ -201,7 +201,21 @@ public class ChessGame {
                     for (int j = 1; j <= 8; j++) {
                         ChessPosition location = new ChessPosition(i + 1, j + 1);
                         ChessPiece piece = boardSetup.getPiece(location);
-                        if()
+                        if(piece != null && piece.getTeamColor() == teamColor){
+                            Collection<ChessMove>legals = validMoves(location);
+                            for (ChessMove legalMove: legals){
+                                ChessBoard copy = new ChessBoard(boardSetup);
+                                ChessGame temp = new ChessGame();
+                                temp.setBoard(copy);
+                                temp.setTeamTurn(teamColor);
+                                try{
+                                    temp.makeMove(legalMove);
+                                    if (temp.isInCheck(teamColor) == false){
+                                        return false;
+                                    }
+                                } catch (InvalidMoveException e){}
+                            }
+                        }
 
                     }
                 }
