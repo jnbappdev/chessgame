@@ -63,6 +63,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece piece = boardSetup.getPiece(startPosition);
+
 //        if(piece == null){
 //            return validMoves;
 //        }
@@ -123,6 +124,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {  // which team's color is getting passed into here?
+//        find kings position, check if enemy piece can attack the king using nested for loop ***
         ChessBoard pieces = boardSetup;
 
         for (int i = 1; i <= 8; i++) {
@@ -160,7 +162,7 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    ChessPosition location = new ChessPosition(i + 1, j + 1);
+                    ChessPosition location = new ChessPosition(i, j);
                     ChessPiece piece = boardSetup.getPiece(location);
                     if (piece != null && piece.getTeamColor() == teamColor) {
                         Collection<ChessMove>legals = validMoves(location);
@@ -199,7 +201,7 @@ public class ChessGame {
             else{
                 for (int i = 1; i <= 8; i++) {
                     for (int j = 1; j <= 8; j++) {
-                        ChessPosition location = new ChessPosition(i + 1, j + 1);
+                        ChessPosition location = new ChessPosition(i, j);
                         ChessPiece piece = boardSetup.getPiece(location);
                         if(piece != null && piece.getTeamColor() == teamColor){
                             Collection<ChessMove>legals = validMoves(location);

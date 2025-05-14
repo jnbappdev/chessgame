@@ -17,7 +17,19 @@ public class ChessBoard {
 
     }
     public ChessBoard(ChessBoard copy) {
-        grid = Arrays.copyOf(copy.grid, copy.grid.length);
+//        grid = Arrays.copyOf(copy.grid, copy.grid.length);
+        grid = new ChessPiece[8][8];
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                ChessPiece piece = copy.grid[i][j];
+                if (piece != null){
+                    grid[i][j] = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                }
+                else {
+                    grid[i][j] = null;
+                }
+            }
+        }
     }
 
     public static void main(String[] args){
