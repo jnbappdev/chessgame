@@ -163,7 +163,7 @@ public class ChessGame {
                 if (teamColor == null) {
                     throw new IllegalArgumentException("team color cannot be null");
                 }
-//                ChessPosition kingPos = findKing(teamColor);
+                ChessPosition kingPos = findKing(teamColor);
                 TeamColor opponent = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
                 for (int fRow = 1; fRow <= 8; fRow++) {
                     for (int fCol = 1; fCol <= 8; fCol++) {
@@ -188,24 +188,24 @@ public class ChessGame {
              * @param teamColor which team to check for checkmate
              * @return True if the specified team is in checkmate
              */
-//            private ChessPosition findKing(TeamColor teamColor) {
-//                for (int row = 1; row < 8; row++) {
-//                    for (int col = 1; col < 8; col++) {
-//                        ChessPosition pos = new ChessPosition(row, col);
-//                        ChessPiece kingPiece = board.getPiece(pos);
-//                        if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
-//                            return pos;
-//                        }
-//                    }
-//                }
-//                throw new IllegalStateException("king not found for team");
-//            }
+            private ChessPosition findKing(TeamColor teamColor) {
+                for (int row = 1; row < 8; row++) {
+                    for (int col = 1; col < 8; col++) {
+                        ChessPosition pos = new ChessPosition(row, col);
+                        ChessPiece kingPiece = board.getPiece(pos);
+                        if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
+                            return pos;
+                        }
+                    }
+                }
+                throw new IllegalStateException("king not found for team");
+            }
 
             public boolean isInCheckmate (TeamColor teamColor){
                 if (teamColor == null) {
                     throw new IllegalArgumentException("team color cannot be null");
                 }
-//                ChessPosition kingPos = findKing(teamColor);
+                ChessPosition kingPos = findKing(teamColor);
                 TeamColor opponent = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
                 for (int opRow = 1; opRow <= 8; opRow++) {
                     for (int opCol = 1; opCol <= 8; opCol++) {
