@@ -10,22 +10,27 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    ChessBoard boardSetup;
-    TeamColor turn;
+    private ChessBoard board;
+    private TeamColor turn;
+    private boolean[] whiteMoved;
+    private boolean[] blackMoved;
 
-
-    //    start with variables and wrting getters and setter so we have the objects I need
-//    start on make move, then validMoves test
     public ChessGame() {
         turn = TeamColor.WHITE;
-        boardSetup = new ChessBoard();
-        boardSetup.resetBoard();
+        board = new ChessBoard();
+        board.resetBoard();
+
+        for(int i = 0; i < 16; i++){
+            whiteMoved[i] = false;
+            blackMoved[i] = false;
+        }
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
+
         return turn;
     }
 
@@ -35,7 +40,10 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        turn = team;
+        if (team == null){
+            throw new IllegalArgumentException("Team cannot be null");
+        }
+        this.turn = team;
     }
 
     @Override
@@ -61,17 +69,26 @@ public class ChessGame {
 
 
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        ChessPiece piece = boardSetup.getPiece(startPosition);
+        if (startPosition == null){
+            throw new IllegalArgumentException("Start position cannot be null");
+        }
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null){
+            return null;
+        }
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> valid = new ArrayList<>();
+        for (ChessMove move : moves) {
+            ChessPiece target = board.getPiece(move.getEndPosition());
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getStartPosition(), null);
+            if(!isInCheck() ){
 
-//        if(piece == null){
-//            return validMoves;
-//        }
-        Collection<ChessMove> possibleMoves = piece.pieceMoves(boardSetup, startPosition);
-        for (ChessMove move : possibleMoves) {
-            ChessBoard copiedBoard = new ChessBoard(boardSetup);
-            copiedBoard.addPiece(move.getEndPosition(), piece);
-            copiedBoard.addPiece(move.getStartPosition(), null);
+            }
+
+            ChessBoard boardCopy = new ChessBoard(board);
+            boardCopy.addPiece(move.getEndPosition(), piece);
+            boardCopy.addPiece(move.getStartPosition(), null);
             if (!isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
@@ -107,7 +124,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {  // which team's color is getting passed into here?
 //        find kings position, check if enemy piece can attack the king using nested for loop ***
-        ChessBoard pieces = boardSetup;
+        ChessBoard pieces = board;
 
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
@@ -115,7 +132,7 @@ public class ChessGame {
                 ChessPiece piece = pieces.getPiece(position); // determine piece for every coordinate
                 if (piece != null) {
                     TeamColor myPieceColor = piece.getTeamColor(); // determine my piece's color
-                    Collection<ChessMove> moves = piece.pieceMoves(boardSetup, position);
+                    Collection<ChessMove> moves = piece.pieceMoves(board, position);
 //                    if no other move results in the king not still being in check return true
                 }
             }
@@ -141,6 +158,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+
         return true;
     }
 
