@@ -24,7 +24,6 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-
         return turn;
     }
 
@@ -189,8 +188,8 @@ public class ChessGame {
              * @return True if the specified team is in checkmate
              */
             private ChessPosition findKing(TeamColor teamColor) {
-                for (int row = 1; row < 8; row++) {
-                    for (int col = 1; col < 8; col++) {
+                for (int row = 1; row <= 8; row++) {
+                    for (int col = 1; col <= 8; col++) {
                         ChessPosition pos = new ChessPosition(row, col);
                         ChessPiece kingPiece = board.getPiece(pos);
                         if (kingPiece != null && kingPiece.getPieceType() == ChessPiece.PieceType.KING && kingPiece.getTeamColor() == teamColor) {
@@ -205,23 +204,23 @@ public class ChessGame {
                 if (teamColor == null) {
                     throw new IllegalArgumentException("team color cannot be null");
                 }
-                ChessPosition kingPos = findKing(teamColor);
-                TeamColor opponent = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-                for (int opRow = 1; opRow <= 8; opRow++) {
-                    for (int opCol = 1; opCol <= 8; opCol++) {
-                        ChessPosition opPos = new ChessPosition(opRow, opCol);
-                        ChessPiece opPiece = board.getPiece(opPos);
-                        if (opPiece != null && opPiece.getTeamColor() == opponent) {
-                            Collection<ChessMove> chessMoves = opPiece.pieceMoves(board, opPos);
-                            for (ChessMove move : chessMoves) {
-                                if (move.getEndPosition().equals(kingPos)) {
-                                    return true;
+                if(!isInCheck(teamColor)) {
+                return false;}
+//                    ChessPosition kingPos = findKing(teamColor);
+//                    TeamColor opponent = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+                    for (int opRow = 1; opRow <= 8; opRow++) {
+                        for (int opCol = 1; opCol <= 8; opCol++) {
+                            ChessPosition opPos = new ChessPosition(opRow, opCol);
+                            ChessPiece opPiece = board.getPiece(opPos);
+                            if(opPiece != null && opPiece.getTeamColor() == teamColor){
+                                Collection<ChessMove>chessMoves = validMoves(opPos);
+                                if(chessMoves != null && !chessMoves.isEmpty()){
+                                    return false;
                                 }
                             }
-                        }
                     }
                 }
-                return false;
+                return true;
             }
 
             /**
