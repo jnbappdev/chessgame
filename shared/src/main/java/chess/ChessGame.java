@@ -144,6 +144,10 @@ public class ChessGame {
                     throw new InvalidMoveException("must specify promotion piece for pawn promotion");
                 }
             }
+            else{
+                board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+                board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+            }
         }
         else if(piece.getPieceType() == ChessPiece.PieceType.QUEEN){
             board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
