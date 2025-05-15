@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -12,6 +13,28 @@ import java.util.Collection;
 public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && turn == chessGame.turn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, turn);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "board=" + board +
+                ", turn=" + turn +
+                '}';
+    }
 
     public ChessGame() {
         turn = TeamColor.WHITE;
@@ -37,11 +60,6 @@ public class ChessGame {
             throw new IllegalArgumentException("Team cannot be null");
         }
         this.turn = team;
-    }
-
-    @Override
-    public String toString() {
-        return "ChessGame{}";
     }
 
     /**
@@ -120,11 +138,40 @@ public class ChessGame {
                     (endRow == 1 && piece.getTeamColor() == TeamColor.BLACK)) {
                 if (move.getPromotionPiece() != null) {
                     newPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+                    board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+                    board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
                 } else {
                     throw new InvalidMoveException("must specify promotion piece for pawn promotion");
                 }
             }
         }
+        else if(piece.getPieceType() == ChessPiece.PieceType.QUEEN){
+            board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+            board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+        }
+        else if(piece.getPieceType() == ChessPiece.PieceType.BISHOP){
+            board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+            board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+        }
+        else if(piece.getPieceType() == ChessPiece.PieceType.KING){
+            board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+            board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+        }
+        else if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+            board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+            board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+        }
+        else if(piece.getPieceType() == ChessPiece.PieceType.ROOK){
+            board.addPiece(move.getEndPosition(), newPiece); //new spot set to new piece with promotion
+            board.addPiece(move.getStartPosition(), null); //old spot set to start pos with null piece
+        }
+        if (piece.getTeamColor() == TeamColor.WHITE){
+            turn = TeamColor.BLACK;
+        }
+        else{
+            turn = TeamColor.WHITE;
+        }
+
 //
 //        int index = getPieceIndex(move.getStartPosition(), piece.getTeamColor());
 //
