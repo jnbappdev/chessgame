@@ -1,6 +1,7 @@
 package server;
+import spark.Spark;
+import com.google.gson.Gson;
 
-import spark.*;
 
 public class Server {
 
