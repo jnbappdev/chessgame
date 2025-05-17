@@ -4,6 +4,7 @@ import dataAccess.userDAO;
 import model.authData;
 import model.userData;
 import org.eclipse.jetty.server.Authentication;
+import dataAccess.DataAccessException;
 
 public class userService{
     private final userDAO user_DAO;

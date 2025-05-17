@@ -4,6 +4,7 @@ import dataAccess.gameDAO;
 import model.gameData;
 import model.authData;
 import chess.ChessGame;
+import dataAccess.DataAccessException;
 
 public class gameService{
     private final gameDAO game_DAO;

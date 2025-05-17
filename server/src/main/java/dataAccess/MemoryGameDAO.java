@@ -5,7 +5,7 @@ import chess.ChessGame;
 import java.util.HashMap;
 import java.util.Map;
 
-public class memoryGameDAO implements gameDAO{
+public class MemoryGameDAO implements gameDAO{
     private final Map<Integer, gameData> games = new HashMap<>();
     private int nextGameID = 1;
 
