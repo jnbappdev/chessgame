@@ -6,6 +6,8 @@ import model.authData;
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 
+import java.util.Collection;
+
 public class gameService{
     private final gameDAO game_DAO;
     private final authDAO auth_DAO;
@@ -21,6 +23,11 @@ public class gameService{
             throw DataAccessException("Game name required.");
         }
         return game_DAO.createGame(gameName);
+    }
+
+    public Collection<gameData>listGames (String authToken) throws DataAccessException{
+        auth_DAO.getAuth(authToken);
+        return game_DAO.listgame();
     }
 
     public void joinGame(String authToken, int gameID, String playerColor) throws DataAccessException{
@@ -39,7 +46,7 @@ public class gameService{
         }
         else if (playerColor.equalsIgnoreCase("BLACK")){
             if(game.blackUsername() != null){
-                throw new DataAccessExeption("Black player already assigned");
+                throw new DataAccessException("Black player already assigned");
             }
             updatedGame = new gameData(game.gameID(), username, game.whiteUsername(), game.gameName(), game.game());
         }
