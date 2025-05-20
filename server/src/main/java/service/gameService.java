@@ -20,7 +20,7 @@ public class gameService{
     public gameData createGame(String authToken, String gameName) throws DataAccessException{
         auth_DAO.getAuth(authToken);
         if(gameName == null){
-            throw DataAccessException("Game name required.");
+            throw new DataAccessException("Game name required.");
         }
         return game_DAO.createGame(gameName);
     }

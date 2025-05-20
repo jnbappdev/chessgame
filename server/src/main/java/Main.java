@@ -3,8 +3,6 @@ import server.ErrorResponse;
 import server.GameResponse;
 import spark.Spark;
 import com.google.gson.Gson;
-
-
 import service.authService;
 import service.gameService;
 import service.userService;
@@ -36,10 +34,6 @@ public class Main {
 
     }
 
-
-
-    public class Server {
-
         public int run(int desiredPort) {
             Spark.port(8081);
 
@@ -48,11 +42,10 @@ public class Main {
             Spark.post("/user", (req, res) -> {
                 res.type("application/json");
                 userData user = gson.fromJson(req.body(), userData.class);
-                try{
+                try {
                     authData authData = userService.register(user);
                     return gson.toJson(authData);
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     res.status(400);
                     return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
                 }
@@ -62,38 +55,83 @@ public class Main {
                 res.type("application/json");
                 userData user = gson.fromJson(res.body(), userData.class);
 
-                try{
+                try {
                     authData authData = userService.login(user);
                     return gson.toJson(authData);
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     res.status(400);
                     return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
                 }
-            } );
+            });
 
             Spark.post("/delete", (req, res) -> {
                 res.type("application/json");
                 String authToken = req.headers("authorization");
 
-                try{
+                try {
                     authService.logout(authToken);
                     res.status(200);
                     return "{}";
-                }
-                catch(Exception e){
+                } catch (Exception e) {
                     res.status(400);
                     return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
                 }
-            } );
+            });
 
             Spark.get("/game", (req, res) -> {
                 res.type("application/json");
                 String authToken = req.headers("authorization");
 
-                try{
-                    return gson.toJson(new ListGameResponse(gameService.joinGame(authToken, gameID, playerColor);));
+                try {
+                    return gson.toJson(new ListGameResponse(gameService.listGames(authToken)));
+                } catch (Exception e) {
+                    res.status(401);
+                    return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
                 }
+            });
+
+            Spark.post("/game", (req, res) -> {
+                res.type("application/json");
+                String auth = req.headers("authorization");
+                GameRequest request = gson.fromJson(req.body(), GameRequest.class);
+
+                try {
+                    gameData game = gameService.createGame(auth, request.gameName());
+                    return gson.toJson(new GameResponse(game.gameID()));
+                } catch (Exception e) {
+                    res.status(401);
+                    return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
+                }
+            });
+
+            Spark.put("/game", (req, res) -> {
+                res.type("application/json");
+                String auth2 = req.headers("authorization");
+                JoinGameRequest joinGameRequest = gson.fromJson(req.body(), JoinGameRequest.class);
+                try {
+                    gameService.joinGame(auth2, joinGameRequest.gameID(), joinGameRequest.playerColor());
+                    res.status(200);
+                    return "{ }";
+                } catch (Exception e) {
+                    res.status(401);
+                    return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
+                }
+            });
+
+            Spark.delete("/db", (req, res) -> {
+                res.type("application/json");
+                try {
+                    gameService.clear();
+                    authService.clear();
+                    userService.clear();
+                    res.status(200);
+                    return "{ }";
+                } catch (Exception e) {
+                    res.status(401);
+                    return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
+                }
+            });
+
 
             //This line initializes the server and can be removed once you have a functioning endpoint
             Spark.init();
@@ -102,13 +140,11 @@ public class Main {
             return Spark.port();
         }
 
-        public void stop() {
-            Spark.stop();
-            Spark.awaitStop();
-        }
-
-
+    public void stop() {
+        Spark.stop();
+        Spark.awaitStop();
     }
+
 
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -117,7 +153,5 @@ public class Main {
         Main runServer = new Main();
         runServer.run(8081);
 
-
     }
-
 }

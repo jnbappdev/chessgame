@@ -23,8 +23,8 @@ public class userService{
             user_DAO.createUser(user);
             return auth_DAO.createAuth(user.username());
         }
-        catch{
-            user_DAO(DataAccessException e){
+        catch(Exception e){
+            {
                 throw new DataAccessException("Unable to register");
             }
         }
@@ -36,5 +36,8 @@ public class userService{
             throw new DataAccessException("Invalid password");
         }
         return auth_DAO.createAuth(user.username());
+    }
+    public void clear() throws DataAccessException{
+        user_DAO.clear();
     }
 }
