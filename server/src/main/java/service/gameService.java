@@ -19,31 +19,52 @@ public class gameService{
 
     public gameData createGame(String authToken, String gameName) throws DataAccessException{
         auth_DAO.getAuth(authToken);
-        if(gameName == null){
-            throw new DataAccessException("Game name required.");
+        if(authToken == null || auth_DAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
         }
         return game_DAO.createGame(gameName);
     }
 
     public Collection<gameData>listGames (String authToken) throws DataAccessException{
-        auth_DAO.getAuth(authToken);
+        if(authToken == null || auth_DAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
+        }
         return game_DAO.listgame();
     }
 
     public void joinGame(String authToken, int gameID, String playerColor) throws DataAccessException{
-        authData auth = auth_DAO.getAuth(authToken);
+        if(authToken == null || auth_DAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
+        }
+        if(playerColor == null || (!playerColor.equalsIgnoreCase("WHITE") && !playerColor.equalsIgnoreCase("BLACK"))){
+            throw new DataAccessException("bad request");
+        }
+
+//        authData auth = auth_DAO.getAuth(authToken);
         gameData game = game_DAO.getGame(gameID);
-        if(playerColor == null) {
+        if(playerColor.equalsIgnoreCase("WHITE") && game.whiteUsername() != null) {
             throw new DataAccessException("Player color required");
         }
-        String username = auth.username();
+        String username = auth_DAO.getAuth(authToken).username();
+
+        if(playerColor.equalsIgnoreCase("BLACK") && game.blackUsername() != null){
+            throw new DataAccessException("already exists");
+        }
         gameData updatedGame;
+        if(playerColor.equalsIgnoreCase("WHITE")){
+            updatedGame = new gameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+        }else{
+            updatedGame = new gameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+        }
+
+
         if(playerColor.equalsIgnoreCase("WHITE")){
             if(game.whiteUsername() != null){
                 throw new DataAccessException("White player already assigned");
             }
             updatedGame = new gameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
         }
+        gameData updatedGame;
         else if (playerColor.equalsIgnoreCase("BLACK")){
             if(game.blackUsername() != null){
                 throw new DataAccessException("Black player already assigned");
