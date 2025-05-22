@@ -18,6 +18,8 @@ import dataAccess.*;
 import service.*;
 import java.util.*;
 
+import com.google.gson.GsonBuilder;
+
 public class Server {
 
     private final userService userService;
@@ -32,7 +34,7 @@ public class Server {
         this.userService = new userService(userDAO, authDAO);
         this.authService = new authService(authDAO);
         this.gameService = new gameService(gameDAO, authDAO);
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().create();
     }
 
     public int run(int desiredPort) {
@@ -43,11 +45,11 @@ public class Server {
 
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
-        Spark.post("/delete", this::logout);
-        Spark.post("/game", this::listgames);
+        Spark.delete("/session", this::logout);
+        Spark.get("/game", this::listgames);
         Spark.post("/game", this::createGame);
-        Spark.post("/game", this::joinGame);
-        Spark.post("/game", this::clear);
+        Spark.put("/game", this::joinGame);
+        Spark.delete("/db", this::clear);
 
         Spark.init();
         Spark.awaitInitialization();
@@ -103,7 +105,7 @@ public class Server {
 
     private Object joinGame(Request request, Response response) {
         response.type("application/json");
-        String authToken= request.headers("Auth.");
+        String authToken= request.headers("Authorization");
         JoinGameRequest join;
         try {
             join = gson.fromJson(request.body(), JoinGameRequest.class);
@@ -116,7 +118,7 @@ public class Server {
         if(join == null || join.gameID() <= 0 || join.playerColor() == null) {
             System.out.println("Debuggggggigin -> request" + join);
             response.status(400);
-            return gson.toJson(new ErrorResponse("Error - Baddd Request, real bad buddy"));
+            return gson.toJson(new ErrorResponse("Error - Bad Request, real bad buddy"));
         }
         try {
             gameService.joinGame(authToken, join.gameID(), join.playerColor());
@@ -125,13 +127,13 @@ public class Server {
         }
         catch(DataAccessException e) {
             response.status(getErrorStatus(e));
-            return gson.toJson(new ErrorResponse("eror - " + e.getMessage()));
+            return gson.toJson(new ErrorResponse("error - " + e.getMessage()));
         }
     }
 
     private Object createGame(Request request, Response response) {
         response.type("application/json");
-        String authToken = request.headers("Auth.");
+        String authToken = request.headers("Authorization");
         GameNameRequest gameName;
         try {
             gameName = gson.fromJson(request.body(), GameNameRequest.class);
@@ -155,7 +157,7 @@ public class Server {
 
     private Object listgames(Request request, Response response) {
         response.type("application/json");
-        String authToken = request.headers("Auth.");
+        String authToken = request.headers("Authorization");
 
         try {
             Collection<gameData> games = gameService.listGames(authToken);
@@ -243,7 +245,7 @@ public class Server {
 
     private int getErrorStatus(DataAccessException e) {
         String mes = e.getMessage().toLowerCase();
-        if(mes.contains("bad request")) {
+        if(mes.contains("bad request") || mes.contains("game not found")) {
             return 400;
         }
         else if(mes.contains("unauthorized")) {
@@ -252,9 +254,7 @@ public class Server {
         else if(mes.contains("already taken")) {
             return 403;
         }
-        else {
             return 500;
-        }
     }
 
 //helper for each response (JSON)
