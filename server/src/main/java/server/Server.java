@@ -148,12 +148,25 @@ public class Server {
             response.status(200);
             return gson.toJson(new CreateGameResponse(game.gameID()));
         } catch (DataAccessException e) {
-            response.status(getErrorResponse(e));
+            response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("Error - " + e.getMessage()));
         }
     }
 
     private Object listgames(Request request, Response response) {
+        response.type("applciation/json");
+        String authToken = request.headers("Auth.");
+
+        try {
+            Collection<gameData> games = gameService.listGames(authToken);
+            response.status(200);
+            return gson.toJson(new ListGamesResponse(games));
+        }
+        catch(DataAccessException e) {
+            response.status(getErrorStatus(e));
+            return gson.toJson(new ErrorResponse("Error - " + e.getMessage()));
+        }
+
     }
 
     private Object logout(Request request, Response response) {
@@ -249,7 +262,7 @@ public class Server {
 
 private record ErrorResponse(String message) {}
 private record ListGamesResponse(Collection<gameData> games) {}
-private record CreateGamesResponse(int gameID) {}
+private record CreateGameResponse(int gameID) {}
 private record GameNameRequest(String gameName) {}
 private record JoinGameRequest(int gameID, String playerColor) {}
 
