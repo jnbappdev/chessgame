@@ -3,7 +3,6 @@ import dataAccess.authDAO;
 import dataAccess.userDAO;
 import model.authData;
 import model.userData;
-import org.eclipse.jetty.server.Authentication;
 import dataAccess.DataAccessException;
 
 public class userService{
@@ -16,19 +15,16 @@ public class userService{
     }
 
     public authData register(userData user) throws DataAccessException{
-        if (user.username() == null || user.password() == null || user.email() == null) {
-            throw new DataAccessException("Missing required fields");
+        if (user == null || user.username() == null || user.password() == null || user.email() == null) {
+            throw new DataAccessException("Bad Request");
         }
-        try{
-            user_DAO.createUser(user);
-            return auth_DAO.createAuth(user.username());
+        if(user_DAO.getUser(user.username()) != null){
+            throw new DataAccessException("already taken");
         }
-        catch(Exception e){
-            {
-                throw new DataAccessException("Unable to register");
-            }
-        }
+    user_DAO.createUser(user);
+    return auth_DAO.createAuth(user.username());
     }
+
 
     public authData login(userData user) throws DataAccessException{
         userData storedUser = user_DAO.getUser(user.username());
