@@ -154,7 +154,7 @@ public class Server {
     }
 
     private Object listgames(Request request, Response response) {
-        response.type("applciation/json");
+        response.type("application/json");
         String authToken = request.headers("Auth.");
 
         try {
@@ -188,7 +188,6 @@ public class Server {
         response.type("application/json");
         String requestBody = request.body();
         System.out.println(requestBody);
-        userData user;
 //        check for empty body
         if(requestBody == null || requestBody.trim().isEmpty()) {
             response.status(400);
@@ -219,8 +218,8 @@ public class Server {
                 response.status(400);
                 return gson.toJson(new ErrorResponse("Bad Request"));
             }
-            userData user1 = new userData(username.trim(), password.trim(), null);
-            System.out.println("Attempting login from " + user1);
+            userData user = new userData(username.trim(), password.trim(), null);
+            System.out.println("Attempting login from " + user);
 
             try {
                 authData authData = userService.login(user);
