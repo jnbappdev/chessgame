@@ -251,7 +251,7 @@ public class Server {
         else if(mes.contains("unauthorized")) {
             return 401;
         }
-        else if(mes.contains("already taken")) {
+        else if(mes.contains("already exists")) {
             return 403;
         }
             return 500;

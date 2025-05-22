@@ -13,6 +13,11 @@ public class MemoryGameDAO implements gameDAO{
 
     @Override
     public gameData createGame(String gameName) throws DataAccessException{
+        if(gameName == null || gameName.trim().isEmpty()){
+//            System.out.println("empty username or null (createAuth failed)");
+            throw new DataAccessException("bad request");
+        }
+
         gameData game = new gameData(nextGameID ++, null, null, gameName, new ChessGame());
         games.put(game.gameID(), game);
         return game;
@@ -29,13 +34,13 @@ public class MemoryGameDAO implements gameDAO{
 
     @Override
     public Collection<gameData> listgame() throws DataAccessException {
-        return List.of();
+        return games.values();
     }
 
     @Override
     public void updateGame(gameData game) throws DataAccessException{
-        if(!games.containsKey(game.gameID())){
-            throw new DataAccessException("Game not found");
+        if(game == null || !games.containsKey(game.gameID())){
+            throw new DataAccessException("Bad request");
         }
         games.put(game.gameID(), game);
     }
@@ -43,6 +48,6 @@ public class MemoryGameDAO implements gameDAO{
     @Override
     public void clear(){
         games.clear();
-        nextGameID = 1;
+        System.out.println("All games cleared");
     }
 }
