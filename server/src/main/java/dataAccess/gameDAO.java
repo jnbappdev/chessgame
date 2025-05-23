@@ -2,7 +2,6 @@ package dataAccess;
 import model.gameData;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface gameDAO{
     gameData createGame(String gameName) throws DataAccessException;
