@@ -3,7 +3,6 @@ import dataAccess.authDAO;
 import dataAccess.gameDAO;
 import model.gameData;
 import dataAccess.DataAccessException;
-
 import java.util.Collection;
 
 public class gameService{
@@ -37,29 +36,23 @@ public class gameService{
         if(playerColor == null || (!playerColor.equalsIgnoreCase("WHITE") && !playerColor.equalsIgnoreCase("BLACK"))){
             throw new DataAccessException("bad request");
         }
-
-//        authData auth = auth_DAO.getAuth(authToken);
         gameData game = game_DAO.getGame(gameID);
+        gameData updatedGame;
+        String username = auth_DAO.getAuth(authToken).username();
         if(playerColor.equalsIgnoreCase("WHITE") && game.whiteUsername() != null) {
             throw new DataAccessException("Player color required");
         }
-        String username = auth_DAO.getAuth(authToken).username();
-
         if(playerColor.equalsIgnoreCase("BLACK") && game.blackUsername() != null){
             throw new DataAccessException("already exists");
         }
-        gameData updatedGame;
         if(playerColor.equalsIgnoreCase("WHITE")){
             updatedGame = new gameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
         }else{
             updatedGame = new gameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
         }
         game_DAO.updateGame(updatedGame);
-
     }
     public void clear() throws DataAccessException{
         game_DAO.clear();
     }
-
-
 }

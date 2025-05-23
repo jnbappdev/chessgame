@@ -1,5 +1,3 @@
 package server;
-//
-public record ErrorResponse(String message){
 
-}
+public record ErrorResponse(String message){ }

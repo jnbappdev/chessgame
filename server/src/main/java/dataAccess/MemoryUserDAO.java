@@ -11,7 +11,6 @@ public class MemoryUserDAO implements userDAO{
         if(user == null || user.username() == null){
             throw new DataAccessException("bad request");
         }
-
         if(users.containsKey(user.username())){
             throw new DataAccessException("already exists");
         }
@@ -35,5 +34,4 @@ public class MemoryUserDAO implements userDAO{
     public Collection<userData> getAllUsers(){
         return users.values();
     }
-
 }

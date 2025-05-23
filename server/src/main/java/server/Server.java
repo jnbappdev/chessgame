@@ -15,9 +15,7 @@ import dataAccess.authDAO;
 import dataAccess.gameDAO;
 import dataAccess.userDAO;
 import dataAccess.*;
-
 import java.util.*;
-
 import com.google.gson.GsonBuilder;
 
 public class Server {
@@ -39,10 +37,7 @@ public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
-
-
         Spark.staticFiles.location("web");
-
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
@@ -50,7 +45,6 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
-
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
@@ -71,8 +65,7 @@ public class Server {
         try {
             user = gson.fromJson(requestBody, userData.class);
             System.out.println(user);
-        }
-        catch(Exception e) {
+        }catch(Exception e) {
             System.out.println(e.getMessage());
             response.status(400);
             return gson.toJson(new ErrorResponse("Error: bad request"));
@@ -81,8 +74,7 @@ public class Server {
             authData authData = userService.register(user);
             response.status(200);
             return gson.toJson(authData);
-        }
-        catch(DataAccessException e) {
+        }catch(DataAccessException e) {
             response.status(getErrorStatus(e));
             String mes = e.getMessage().toLowerCase().contains("already taken") ?
                 "Error: already taken" :"Error: " + e.getMessage();
@@ -98,8 +90,7 @@ public class Server {
             authService.clear();
             response.status(200);
             return "{}";
-        }
-        catch(DataAccessException e) {
+        }catch(DataAccessException e) {
             response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         }
@@ -111,8 +102,7 @@ public class Server {
         JoinGameRequest join;
         try {
             join = gson.fromJson(request.body(), JoinGameRequest.class);
-        }
-        catch(Exception e){
+        }catch(Exception e){
             System.out.println("For debugging - " + e.getMessage());
             response.status(400);
             return gson.toJson(new ErrorResponse("Error - Bad Request smh"));
@@ -126,8 +116,7 @@ public class Server {
             gameService.joinGame(authToken, join.gameID(), join.playerColor());
             response.status(200);
             return "{}";
-        }
-        catch(DataAccessException e) {
+        }catch(DataAccessException e) {
             response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("error - " + e.getMessage()));
         }
@@ -139,7 +128,7 @@ public class Server {
         GameNameRequest gameName;
         try {
             gameName = gson.fromJson(request.body(), GameNameRequest.class);
-        } catch (Exception e) {
+        }catch (Exception e) {
             response.status(400);
             return gson.toJson(new ErrorResponse("Error - Bad Request"));
         }
@@ -151,7 +140,7 @@ public class Server {
             gameData game = gameService.createGame(authToken, gameName.gameName());
             response.status(200);
             return gson.toJson(new CreateGameResponse(game.gameID()));
-        } catch (DataAccessException e) {
+        }catch (DataAccessException e) {
             response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("Error - " + e.getMessage()));
         }
@@ -160,29 +149,24 @@ public class Server {
     private Object listgames(Request request, Response response) {
         response.type("application/json");
         String authToken = request.headers("Authorization");
-
         try {
             Collection<gameData> games = gameService.listGames(authToken);
             response.status(200);
             return gson.toJson(new ListGamesResponse(games));
-        }
-        catch(DataAccessException e) {
+        }catch(DataAccessException e) {
             response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("Error - " + e.getMessage()));
         }
-
     }
 
     private Object logout(Request request, Response response) {
         response.type("application/json");
         String authToken = request.headers("Authorization");
-
         try {
             authService.logout(authToken);
             response.status(200);
             return "{}";
-        }
-        catch(DataAccessException e){
+        }catch(DataAccessException e){
             response.status(getErrorStatus(e));
             return gson.toJson(new ErrorResponse("Error" + e.getMessage()));
         }
@@ -192,7 +176,6 @@ public class Server {
         response.type("application/json");
         String requestBody = request.body();
         System.out.println(requestBody);
-//        check for empty body
         if(requestBody == null || requestBody.trim().isEmpty()) {
             response.status(400);
             return gson.toJson(new ErrorResponse("Bad Request"));
@@ -201,8 +184,7 @@ public class Server {
         try {
             json = JsonParser.parseString(requestBody).getAsJsonObject();
             System.out.println(json.keySet());
-        }
-        catch(Exception e) {
+        }catch(Exception e) {
             System.out.println(e.getMessage());
             response.status(400);
             return gson.toJson(new ErrorResponse("Bad Request"));
@@ -230,15 +212,13 @@ public class Server {
                 System.out.println("successful login from " + username.trim());
                 response.status(200);
                 return gson.toJson(authData);
-            }
-            catch(DataAccessException e) {
+            }catch(DataAccessException e) {
                 System.out.println("Login failed from " + username.trim() + "this the error: " + e.getMessage());
                 int status = getErrorStatus(e);
                 response.status(status);
                 return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
             }
-        }
-        catch(Exception e) {
+        }catch(Exception e) {
             System.out.println(e.getMessage());
             response.status(400);
             return gson.toJson(new ErrorResponse("Bad Requesttttt"));
@@ -249,23 +229,17 @@ public class Server {
         String mes = e.getMessage().toLowerCase();
         if(mes.contains("bad request") || mes.contains("game not found")) {
             return 400;
-        }
-        else if(mes.contains("unauthorized")) {
+        }else if(mes.contains("unauthorized")) {
             return 401;
-        }
-        else if(mes.contains("already exists") || mes.contains("already taken")) {
+        }else if(mes.contains("already exists") || mes.contains("already taken")) {
             return 403;
-        }
-            return 500;
+        }return 500;
     }
 
-//helper for each response (JSON)
-
-private record ErrorResponse(String message) {}
-private record ListGamesResponse(Collection<gameData> games) {}
-private record CreateGameResponse(int gameID) {}
-private record GameNameRequest(String gameName) {}
-private record JoinGameRequest(int gameID, String playerColor) {}
-
+    private record ErrorResponse(String message) {}
+    private record ListGamesResponse(Collection<gameData> games) {}
+    private record CreateGameResponse(int gameID) {}
+    private record GameNameRequest(String gameName) {}
+    private record JoinGameRequest(int gameID, String playerColor) {}
 
 }

@@ -1,6 +1,5 @@
 package dataAccess;
 import model.authData;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,7 +12,6 @@ public class MemoryAuthDAO implements authDAO{
             System.out.println("empty username or null (createAuth failed)");
             throw new DataAccessException("bad request");
         }
-
         String authToken = UUID.randomUUID().toString();
         authData auth = new authData(authToken, username);
         auths.put(authToken, auth);
@@ -26,7 +24,6 @@ public class MemoryAuthDAO implements authDAO{
             System.out.println("null authToken bruh");
             throw new DataAccessException("unauthorized");
         }
-
         authData auth = auths.get(authToken);
         if(auth == null){
             throw new DataAccessException("unauthorized");

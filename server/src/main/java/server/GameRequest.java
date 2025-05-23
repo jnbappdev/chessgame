@@ -1,5 +1,3 @@
 package server;
 
-public record GameRequest(String gameName){
-
-}
+public record GameRequest(String gameName){ }

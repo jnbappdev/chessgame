@@ -25,14 +25,14 @@ public class Main {
         this.authService = new authService(authDAO);
         this.gameService = new gameService(gameDAO, authDAO);
         this.gson = new Gson();
-
     }
 
     public int run(int desiredPort) {
         Spark.port(8081);
-
         Spark.staticFiles.location("web");
+
         // Register your endpoints and handle exceptions here.
+
         Spark.post("/user", (req, res) -> {
             res.type("application/json");
             userData user = gson.fromJson(req.body(), userData.class);
@@ -125,12 +125,6 @@ public class Main {
                 return gson.toJson(new ErrorResponse("Error " + e.getMessage()));
             }
         });
-
-
-        //This line initializes the server and can be removed once you have a functioning endpoint
-        Spark.init();
-
-        Spark.awaitInitialization();
         return Spark.port();
     }
 

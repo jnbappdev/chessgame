@@ -37,13 +37,11 @@ public class userService {
                 user.username().trim().isEmpty() || user.password().trim().isEmpty()) {
             throw new DataAccessException("Bad Request");
         }
-
         // Check credentials
         userData storedUser = user_DAO.getUser(user.username());
         if (storedUser == null || !storedUser.password().equals(user.password())) {
             throw new DataAccessException("unauthorized");
         }
-
         return auth_DAO.createAuth(user.username());
     }
 

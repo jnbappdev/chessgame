@@ -1,7 +1,6 @@
 package service;
 import dataAccess.DataAccessException;
 import dataAccess.authDAO;
-//import dataAccess.DataAccessException;
 
 public class authService{
     private final authDAO auth_DAO;
@@ -21,5 +20,4 @@ public class authService{
     public void clear() throws DataAccessException{
         auth_DAO.clear();
     }
-
 }

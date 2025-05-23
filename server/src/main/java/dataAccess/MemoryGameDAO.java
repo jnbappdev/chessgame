@@ -1,7 +1,6 @@
 package dataAccess;
 import model.gameData;
 import chess.ChessGame;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +12,8 @@ public class MemoryGameDAO implements gameDAO{
     @Override
     public gameData createGame(String gameName) throws DataAccessException{
         if(gameName == null || gameName.trim().isEmpty()){
-//            System.out.println("empty username or null (createAuth failed)");
             throw new DataAccessException("bad request");
         }
-
         gameData game = new gameData(nextGameID ++, null, null, gameName, new ChessGame());
         games.put(game.gameID(), game);
         return game;

@@ -1,5 +1,3 @@
 package server;
 
-public record GameResponse(int gameID){
-
-}
+public record GameResponse(int gameID){ }
