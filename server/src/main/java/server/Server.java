@@ -75,7 +75,7 @@ public class Server {
         catch(Exception e) {
             System.out.println(e.getMessage());
             response.status(400);
-            return gson.toJson(new ErrorResponse("Error Bad Request"));
+            return gson.toJson(new ErrorResponse("Error: bad request"));
         }
         try {
             authData authData = userService.register(user);
@@ -84,7 +84,9 @@ public class Server {
         }
         catch(DataAccessException e) {
             response.status(getErrorStatus(e));
-            return gson.toJson(new ErrorResponse("Error" + e.getMessage()));
+            String mes = e.getMessage().toLowerCase().contains("already taken") ?
+                "Error: already taken" :"Error: " + e.getMessage();
+            return gson.toJson(new ErrorResponse(mes));
         }
     }
 
@@ -251,7 +253,7 @@ public class Server {
         else if(mes.contains("unauthorized")) {
             return 401;
         }
-        else if(mes.contains("already exists")) {
+        else if(mes.contains("already exists") || mes.contains("already taken")) {
             return 403;
         }
             return 500;

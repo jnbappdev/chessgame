@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * Represents a single square position on a chess board
-**/
+ **/
 
 public class ChessPosition {
 
