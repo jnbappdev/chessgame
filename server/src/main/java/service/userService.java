@@ -4,6 +4,8 @@ import dataAccess.userDAO;
 import model.authData;
 import model.userData;
 import dataAccess.DataAccessException;
+import dataAccess.*;
+
 
 public class userService{
     private final userDAO user_DAO;
@@ -27,9 +29,14 @@ public class userService{
 
 
     public authData login(userData user) throws DataAccessException{
+        if(user == null || user.username() == null || user.password() == null){
+            throw new DataAccessException("bad request");
+
+        }
+
         userData storedUser = user_DAO.getUser(user.username());
-        if(!storedUser.password().equals(user.password())){
-            throw new DataAccessException("Invalid password");
+        if(storedUser == null || !storedUser.password().equals(user.password())){
+            throw new DataAccessException("unauthorized");
         }
         return auth_DAO.createAuth(user.username());
     }

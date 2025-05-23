@@ -56,25 +56,8 @@ public class gameService{
         }else{
             updatedGame = new gameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
         }
-
-
-        if(playerColor.equalsIgnoreCase("WHITE")){
-            if(game.whiteUsername() != null){
-                throw new DataAccessException("White player already assigned");
-            }
-            updatedGame = new gameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-        }
-        gameData updatedGame;
-        else if (playerColor.equalsIgnoreCase("BLACK")){
-            if(game.blackUsername() != null){
-                throw new DataAccessException("Black player already assigned");
-            }
-            updatedGame = new gameData(game.gameID(), username, game.whiteUsername(), game.gameName(), game.game());
-        }
-        else{
-            throw new DataAccessException("Invalid player color");
-        }
         game_DAO.updateGame(updatedGame);
+
     }
     public void clear() throws DataAccessException{
         game_DAO.clear();
