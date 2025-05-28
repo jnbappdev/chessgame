@@ -17,7 +17,7 @@ public class mySQLAuthDao implements authData {
     @Override
     public authData createAuthToken(String username) throws DataAccessException{
         String authToken = UUID.randomUUID().toString();
-        String sql = "INSERT INTO authToken(authToken, username) VALUES(?,?)";
+        String sql = "INSERT INTO authTokens (authToken, username) VALUES(?,?)";
         try(Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)
         ){
@@ -31,7 +31,7 @@ public class mySQLAuthDao implements authData {
     }
     @Override
     public authData getAuthToken (String authToken) throws DataAccessException {
-        String sql = "SELECT authToken, username FROM WHERE authToken = ?";
+        String sql = "SELECT authToken, username FROM authtokens WHERE authToken = ?";
         try (Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)){
             statement.setString(1, authToken);
@@ -48,7 +48,7 @@ public class mySQLAuthDao implements authData {
     }
     @Override
     public void deleteAuthToken (String authToken) throws DataAccessException {
-        String sql = "DELETE authToken WHERE authToken = ?";
+        String sql = "DELETE FROM authTokens WHERE authToken = ?";
         try(Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)){
             statement.setString(1, authToken);
@@ -60,7 +60,7 @@ public class mySQLAuthDao implements authData {
 
     @Override
     public void clearAll() throws DataAccessException {
-        String sql = "DELETE FROM authToken";
+        String sql = "DELETE FROM authTokens";
         try(Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)){
             statement.executeUpdate();}
