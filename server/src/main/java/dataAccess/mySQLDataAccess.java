@@ -1,20 +1,21 @@
 package dataAccess;
 
-public class mySQLDataAccess implements dataaccess{
+import java.sql.SQLException;
+
+public class MySQLDataAccess implements dataaccess {
     private final userDAO userDAO;
     private final gameDAO gameDAO;
     private final authDAO authDAO;
-    private final DatabaseManager;
+    private final DatabaseManager dbManager;
 
-    public mySQLDataAccess() throws DataAccessException{
-        try{
-            this.DatabaseManager = new DatabaseManager();
+    public MySQLDataAccess() throws DataAccessException {
+        try {
+            this.dbManager = new DatabaseManager();
             this.userDAO = new mySQLUserDAO(dbManager);
             this.gameDAO = new mySQLGameDAO(dbManager);
             this.authDAO = new mySQLAuthDAO(dbManager);
-
-        }catch(DataAccessException e){
-            throw new DataAccessException("cannot access data" + e.getMessage());
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException("Failed to initialize database or DAOs: " + e.getMessage());
         }
     }
 
@@ -34,7 +35,7 @@ public class mySQLDataAccess implements dataaccess{
     }
 
     @Override
-    public void clear(){
+    public void clear() throws DataAccessException{
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();

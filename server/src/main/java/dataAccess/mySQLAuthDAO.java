@@ -1,16 +1,24 @@
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
-import model.*;
-import java.sql.*;
+package dataAccess;
+
+import model.authData;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
-public class mySQLAuthDao implements authData {
+public class mySQLAuthDAO implements authDAO {
     private final DatabaseManager dbManager;
-    public mySQLAuthDao throws DataAccessException {
-        this.dbManager = new DatabaseManager();
+
+    public mySQLAuthDAO() throws DataAccessException {
+        try {
+            this.dbManager = new DatabaseManager();
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to initialize database: " + e.getMessage());
+        }
     }
 
-    public mySQLAuthDao (DatabaseManager dbManager) throws DataAccessException {
+    public mySQLAuthDAO(DatabaseManager dbManager) throws DataAccessException {
         this.dbManager = dbManager;
     }
 
@@ -30,7 +38,7 @@ public class mySQLAuthDao implements authData {
         }
     }
     @Override
-    public authData getAuthToken (String authToken) throws DataAccessException {
+    public authData getAuthToken(String authToken) throws DataAccessException {
         String sql = "SELECT authToken, username FROM authtokens WHERE authToken = ?";
         try (Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)){
@@ -47,7 +55,7 @@ public class mySQLAuthDao implements authData {
         }
     }
     @Override
-    public void deleteAuthToken (String authToken) throws DataAccessException {
+    public void deleteAuthToken(String authToken) throws DataAccessException {
         String sql = "DELETE FROM authTokens WHERE authToken = ?";
         try(Connection conn = dbManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(sql)){
