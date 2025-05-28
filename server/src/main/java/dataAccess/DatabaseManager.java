@@ -1,77 +1,73 @@
 package dataAccess;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
+import java.io.InputStream;
 
 public class DatabaseManager {
-    private static String databaseName;
-    private static String dbUsername;
-    private static String dbPassword;
-    private static String connectionUrl;
+    private static final String DATABASE_URL;
+    private static final String DATABASE_USERNAME;
+    private static final String DATABASE_PASSWORD;
 
-    /*
-     * Load the database information for the db.properties file.
-     */
     static {
-        loadPropertiesFromResources();
-    }
-
-    /**
-     * Creates the database if it does not already exist.
-     */
-    static public void createDatabase() throws DataAccessException {
-        var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+        try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties")) {
+            Properties prop = new Properties();
+            prop.load(input);
+            DATABASE_URL = prop.getProperty("database.url");
+            DATABASE_USERNAME = prop.getProperty("database.username");
+            DATABASE_PASSWORD = prop.getProperty("database.password");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize database: " + e.getMessage());
         }
+        createDatabase();
     }
 
-    /**
-     * Create a connection to the database and sets the catalog based upon the
-     * properties specified in db.properties. Connections to the database should
-     * be short-lived, and you must close the connection when you are done with it.
-     * The easiest way to do that is with a try-with-resource block.
-     * <br/>
-     * <code>
-     * try (var conn = DatabaseManager.getConnection()) {
-     * // execute SQL statements.
-     * }
-     * </code>
-     */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
-            //do not wrap the following line with a try-with-resources
-            var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-            conn.setCatalog(databaseName);
-            return conn;
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to get connection", ex);
+            return DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to get connection: " + e.getMessage());
         }
     }
 
-    private static void loadPropertiesFromResources() {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
-            if (propStream == null) {
-                throw new Exception("Unable to load db.properties");
+    private static void createDatabase() {
+        String[] createStatements = {
+                """
+            CREATE TABLE IF NOT EXISTS users (
+                username VARCHAR(255) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255),
+                PRIMARY KEY (username)
+            )
+            """,
+                """
+            CREATE TABLE IF NOT EXISTS games (
+                gameID INT NOT NULL AUTO_INCREMENT,
+                whiteUsername VARCHAR(255),
+                blackUsername VARCHAR(255),
+                gameName VARCHAR(255) NOT NULL,
+                game TEXT NOT NULL,
+                PRIMARY KEY (gameID)
+            )
+            """,
+                """
+            CREATE TABLE IF NOT EXISTS auth (
+                authToken VARCHAR(255) NOT NULL,
+                username VARCHAR(255) NOT NULL,
+                PRIMARY KEY (authToken)
+            )
+            """
+        };
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD)) {
+            for (String stmt : createStatements) {
+                try (var ps = conn.prepareStatement(stmt)) {
+                    ps.executeUpdate();
+                }
             }
-            Properties props = new Properties();
-            props.load(propStream);
-            loadProperties(props);
-        } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties", ex);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create database tables: " + e.getMessage());
         }
-    }
-
-    private static void loadProperties(Properties props) {
-        databaseName = props.getProperty("db.name");
-        dbUsername = props.getProperty("db.user");
-        dbPassword = props.getProperty("db.password");
-
-        var host = props.getProperty("db.host");
-        var port = Integer.parseInt(props.getProperty("db.port"));
-        connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 }

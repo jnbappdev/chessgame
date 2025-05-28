@@ -1,56 +1,30 @@
 package dataAccess;
+
 import model.userData;
-import java.sql;
-import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
 
-public class userDAO {
-    public final Database database;
+// Interface defining methods for managing user data
+public interface userDAO {
+    /**
+     * Creates a new user in storage.
+     *
+     * @param user the userData object containing user information
+     * @throws DataAccessException if the user is invalid or creation fails
+     */
+    void createUser(userData user) throws DataAccessException;
 
-    public userDAO(Database database) {
-        this.database = database;
-    }
+    /**
+     * Retrieves user data for a given username.
+     *
+     * @param username the username to look up
+     * @return the userData object associated with the username, or null if not found
+     * @throws DataAccessException if the username is invalid
+     */
+    userData getUser(String username) throws DataAccessException;
 
-    void createUser(userData user) throws DataAccessException{
-        String sql = "INSERT INTO users(username, password, email) VALUES(?, ?, ?)";
-        try(Connection conn = database.getConnection());
-        PreparedStatement statement = conn.preparestatement(sql){
-            statement.setString(1, user.username());
-            statement.setString(2, user.password());
-            statement.setString(3, user.email());
-            statement.executeUpdate();
-        }catch(SQLException e){
-            throw new DataAccessException("Error creating user" + e.getMessage());
-        }
-    }
-    userData getUser(String username) throws DataAccessException{
-        String sql = "SELECT username, password, email FROM users WHERE username = ?";
-        try(Connection conn = database.getConnection());
-        PreparedStatement statement = conn.preparestatement(sql){
-            statement.setString(1, username);
-            ResultSet result = statement.executeQuery();
-            if(statement.next()){
-                return new userData(
-                    result.getString("username"),
-                    result.getString("password"),
-                    result.getString("email")
-                );
-            }
-            return null;
-        }catch(SQLException e) {
-            throw new DataAccessException("Error getting user" + e.getMessage());
-        }
-    }
-    void clear() throws DataAccessException {
-        String sql = "DELETE FROM users";
-        try(Connection conn = database.getConnection());
-        Statement statement = conn.createStatement(){
-            statement.executeUpdate(sql);
-        } catch(SQLException e){
-            throw new DataAccessException("Error clearing users" + e.getMessage());
-        }
-    }
-
-
+    /**
+     * Clears all user data from storage.
+     *
+     * @throws DataAccessException if the operation fails
+     */
+    void clear() throws DataAccessException;
 }
